@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  chicken_stack:
+    container_name: chicken_stack
+    image: localstack/localstack:latest
+    ports:
+      - '4566:4566'
+    environment:
+      - SERVICES=s3
+      - ENDPOINT_OVERRIDES=s3=http://s3.amazonaws.com
+    env_file:
+      - .env
+    volumes:
+      - ./local.init/localstack/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+      - '/var/run/docker.sock:/var/run/docker.sock'
+
+  chicken_smtp:
+    container_name: chicken_smtp
+    image: mailhog/mailhog:latest
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  chicken_db:
+    container_name: chicken_db
+    image: postgres:alpine
+    ports:
+      - '9000:5432'
+    env_file:
+      - .env
+
+  chicken_api:
+    container_name: chicken_api
+    image: 'node:18.18.0'
+    working_dir: /usr/api
+    ports:
+      - '9001:3000'
+      - '9229:9229'
+      - '8000:8000'
+    command: bash -c "npm i && npm run migration:run && npm run start:debug"
+    env_file:
+      - .env
+    depends_on:
+      - chicken_stack
+      - chicken_db
+    volumes:
+      - ./:/usr/api
