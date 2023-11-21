@@ -12,7 +12,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./local.init/localstack/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+      - ./local.init/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
       - '/var/run/docker.sock:/var/run/docker.sock'
 
   chicken_smtp:

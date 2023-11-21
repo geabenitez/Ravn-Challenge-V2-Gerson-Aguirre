@@ -1,14 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Equal, FindManyOptions, FindOptionsWhere, Repository } from 'typeorm';
-import { CategoriesRepository } from '../categories/categories.repository';
-import { ProductsEntity } from './entities/products.entity';
+import { CategoriesRepository } from '../../categories/repositories/categories.repository';
 import {
   ProductsCreateSingleRequest,
   ProductsGetManyRequest,
   ProductsGetManyResponse,
   ProductsUpdateSingleRequest,
-} from './products.types';
+} from '../_types/products.types';
+import { ProductsEntity } from '../entities/products.entity';
 
 @Injectable()
 export class ProductsRepository {
@@ -24,9 +24,10 @@ export class ProductsRepository {
     return await this.repository.findOneOrFail({
       where: { id },
       join: {
-        alias: 'products',
+        alias: 'product',
         leftJoinAndSelect: {
-          category: 'products.category',
+          category: 'product.category',
+          images: 'product.images',
         },
       },
     });
@@ -65,6 +66,7 @@ export class ProductsRepository {
     );
 
     const product = await this.getSingle(id);
+    delete product.images;
     for (const key in data) {
       if (data[key] !== undefined) {
         switch (key) {
@@ -126,6 +128,7 @@ export class ProductsRepository {
         alias: 'products',
         leftJoinAndSelect: {
           category: 'products.category',
+          images: 'products.images',
         },
       },
     };

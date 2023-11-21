@@ -1,10 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, PartialGraphHost } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    snapshot: true,
+    abortOnError: false,
+  });
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
@@ -15,6 +19,7 @@ async function bootstrap() {
       .setDescription(
         'Welcome to the Chicken Store API documentation. Our API provides a comprehensive set of operations for managing a chicken store, including inventory management, order processing, and customer interactions.',
       )
+      .addBearerAuth()
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config, {
@@ -28,4 +33,8 @@ async function bootstrap() {
 
   await app.listen(3000);
 }
-bootstrap();
+
+bootstrap().catch(() => {
+  fs.writeFileSync('graph.json', PartialGraphHost.toString() ?? '');
+  process.exit(1);
+});

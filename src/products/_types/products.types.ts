@@ -1,11 +1,12 @@
-import { CategoriesGetSingleRequest } from '../categories/categories.types';
+import { CategoriesGetSingleResponse } from '../../categories/_types/categories.types';
+import { ProductImages } from './products.images.types';
 
 export type ProductsGetSingleResponse = {
   name: string;
   description: string;
   price: number;
-  category: CategoriesGetSingleRequest;
-  imageUrl: string;
+  category: CategoriesGetSingleResponse;
+  images: ProductImages[];
   isActive: boolean;
 };
 
@@ -13,6 +14,7 @@ export type ProductsCreateSingleRequest = {
   name: string;
   description: string;
   price: number;
+  quantity: number;
   category: string;
   imageUrl?: string;
   isActive?: boolean;

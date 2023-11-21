@@ -1,17 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsBoolean,
   IsInt,
+  IsMimeType,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
-  IsUrl,
   Min,
 } from 'class-validator';
-import { CategoriesGetSingleRequest } from '../categories/categories.types';
+import { CategoriesGetSingleResponse } from '../../categories/_types/categories.types';
+import { ProductImages } from '../_types/products.images.types';
 import {
   ProductUpdateSingleStatusRequest,
   ProductsCreateSingleRequest,
@@ -19,7 +22,7 @@ import {
   ProductsGetManyResponse,
   ProductsGetSingleResponse,
   ProductsUpdateSingleRequest,
-} from './products.types';
+} from '../_types/products.types';
 
 export class DTOProductsCreateSingleRequest
   implements ProductsCreateSingleRequest
@@ -49,12 +52,16 @@ export class DTOProductsCreateSingleRequest
   price: number;
 
   @IsNotEmpty()
+  @IsInt()
+  @ApiProperty({
+    description: 'Quantity available of product',
+    example: 10,
+  })
+  quantity: number;
+
+  @IsNotEmpty()
   @IsUUID('all')
   category: string;
-
-  @IsOptional()
-  @IsUrl()
-  imageUrl?: string;
 }
 
 export class DTOProductsUpdateSingleRequest
@@ -87,10 +94,6 @@ export class DTOProductsUpdateSingleRequest
   @IsOptional()
   @IsUUID('all')
   category: string;
-
-  @IsOptional()
-  @IsUrl()
-  imageUrl?: string;
 }
 
 export class DTOProductUpdateSingleStatusRequest
@@ -108,8 +111,8 @@ export class DTOProductsGetSingleResponse implements ProductsGetSingleResponse {
   name: string;
   description: string;
   price: number;
-  category: CategoriesGetSingleRequest;
-  imageUrl: string;
+  category: CategoriesGetSingleResponse;
+  images: ProductImages[];
   isActive: boolean;
 }
 
@@ -155,4 +158,12 @@ export class DTOProductsGetManyResponse implements ProductsGetManyResponse {
   page: number;
   limit: number;
   data: ExtendedDTOProductsGetSingleResponse[];
+}
+
+export class DTOProductsUploadImagesRequest {
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsMimeType({ each: true })
+  @ApiProperty({ type: 'array', items: { type: 'string', format: 'binary' } })
+  images: Express.Multer.File[];
 }

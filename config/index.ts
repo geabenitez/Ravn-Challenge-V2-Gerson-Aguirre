@@ -3,9 +3,11 @@ import {
   ConfigModuleOptions,
   ConfigService,
 } from '@nestjs/config';
+import { JwtModuleAsyncOptions } from '@nestjs/jwt';
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { config as ormconfig } from '../ormconfig';
+import { AWS, JWT, MAILER } from './types';
 
 // Defines all the environment variables
 const environment = () => ({
@@ -14,14 +16,20 @@ const environment = () => ({
   jwt: {
     secret: process.env.JWT_SECRET,
     expiration: process.env.JWT_TOKEN_EXPIRATION,
-  },
+  } as JWT,
   mailer: {
     port: parseInt(process.env.MAILER_PORT, 10),
     host: process.env.MAILER_HOST,
     user: process.env.MAILER_USER,
     pass: process.env.MAILER_PASS,
-  },
-  aws: {},
+  } as MAILER,
+  aws: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accountId: process.env.AWS_ACCOUNT_ID,
+    region: process.env.AWS_REGION,
+    bucket: process.env.AWS_BUCKET_NAME,
+  } as AWS,
 });
 
 // Validation for all the environment variables
@@ -45,6 +53,7 @@ const validation = {
   AWS_SECRET_ACCESS_KEY: Joi.string().required(),
   AWS_ACCOUNT_ID: Joi.string().required(),
   AWS_REGION: Joi.string().default('us-east-1'),
+  AWS_BUCKET_NAME: Joi.string().required(),
 };
 
 // Options for ConfigModule
@@ -69,15 +78,15 @@ export const TypeOrmOptions: TypeOrmModuleAsyncOptions = {
   },
 };
 
-// // Options for JWT
-// export const JwtOptions: JwtModuleAsyncOptions = {
-//   imports: [ConfigModule],
-//   inject: [ConfigService],
-//   useFactory: (config: ConfigService) => {
-//     const { secret, expiration: expiresIn } = config.get('jwt');
-//     return { secret, signOptions: { expiresIn } };
-//   },
-// };
+// Options for JWT
+export const JwtOptions: JwtModuleAsyncOptions = {
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (config: ConfigService) => {
+    const { secret, expiration: expiresIn } = config.get<JWT>('jwt');
+    return { global: true, secret, signOptions: { expiresIn } };
+  },
+};
 
 // // Options for Mailer
 // export const MailerOptions: MailerAsyncOptions = {
