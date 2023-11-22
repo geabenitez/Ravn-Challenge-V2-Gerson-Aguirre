@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
-import { UsersCartCreateSingleRequest } from '../_types/users.cart.types';
+import { Equal, IsNull, Repository } from 'typeorm';
+import { OrdersEntity } from '../../orders/entities/orders.entity';
+import { UsersCartProcessAdditionRequest } from '../_types/users.cart.types';
 import { UsersCartEntity } from '../entities/users.cart.entity';
 import { UsersRepository } from './users.repository';
 
@@ -17,7 +18,7 @@ export class UsersCartRepository {
 
   async createSingle(
     user: string,
-    data: UsersCartCreateSingleRequest,
+    data: UsersCartProcessAdditionRequest,
   ): Promise<UsersCartEntity> {
     this.logger.log(
       `Adding product with id: "${data.productId}" to user with id: "${user}"`,
@@ -45,6 +46,29 @@ export class UsersCartRepository {
     return await this.repository.sum('quantity', {
       user: Equal(user),
       product: Equal(product),
+      order: IsNull(),
     });
+  }
+
+  async getByUser(user: string): Promise<UsersCartEntity[]> {
+    this.logger.log(`Getting cart for user with id: "${user}"`);
+    return await this.repository.find({
+      where: {
+        user: Equal(user),
+        order: IsNull(),
+      },
+      relations: ['product', 'user'],
+    });
+  }
+
+  async processCart(user: string, order: OrdersEntity): Promise<void> {
+    this.logger.log(`Processing cart for user with id: "${user}"`);
+    await this.repository.update(
+      {
+        user: Equal(user),
+        order: IsNull(),
+      },
+      { order },
+    );
   }
 }

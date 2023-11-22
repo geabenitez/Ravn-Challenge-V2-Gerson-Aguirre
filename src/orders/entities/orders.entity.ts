@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { CustomEntity } from '../../../config/entity';
+import { UsersCartEntity } from '../../users/entities/users.cart.entity';
 import { UsersEntity } from '../../users/entities/users.entity';
 import { OrdersDetailsEntity } from './orders.details.entity';
 
@@ -22,4 +23,7 @@ export class OrdersEntity extends CustomEntity {
 
   @OneToMany(() => OrdersDetailsEntity, (orderDetail) => orderDetail.order)
   ordersDetails: OrdersDetailsEntity[];
+
+  @OneToMany(() => UsersCartEntity, (cart) => cart.order)
+  cart: UsersCartEntity[];
 }

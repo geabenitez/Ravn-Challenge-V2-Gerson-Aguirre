@@ -139,7 +139,7 @@ export class DTOProductsGetManyRequest implements ProductsGetManyRequest {
     description: 'Status of the product',
     example: true,
   })
-  isActive: boolean;
+  isActive?: boolean;
 
   @IsOptional()
   @IsUUID('all')
@@ -147,7 +147,7 @@ export class DTOProductsGetManyRequest implements ProductsGetManyRequest {
     description: 'Category of the product',
     example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
   })
-  category: string;
+  category?: string;
 }
 
 class ExtendedDTOProductsGetSingleResponse extends DTOProductsGetSingleResponse {

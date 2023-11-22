@@ -1,10 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsUUID } from 'class-validator';
 import { DTOSimpleResponse } from '../../shared.dto';
-import { UsersCartCreateSingleRequest } from '../_types/users.cart.types';
+import {
+  UsersCartGetResponse,
+  UsersCartProcessAdditionRequest,
+} from '../_types/users.cart.types';
 
-export class DTOUsersCartCreateSingleRequest
-  implements UsersCartCreateSingleRequest
+export class DTOUsersCartProcessAdditionRequest
+  implements UsersCartProcessAdditionRequest
 {
   @IsNotEmpty()
   @IsInt()
@@ -22,4 +25,17 @@ export class DTOUsersCartCreateSingleRequest
   productId: string;
 }
 
-export class DTOUsersCartCreateSingleResponse extends DTOSimpleResponse {}
+export class DTOUsersCartProcessAdditionResponse extends DTOSimpleResponse {}
+
+export class DTOUsersCartProcessPurchaseResponse extends DTOSimpleResponse {}
+
+class DTOUsersCartGetResponseItems {
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+}
+export class DTOUsersCartGetResponse implements UsersCartGetResponse {
+  total: number;
+  items: DTOUsersCartGetResponseItems[];
+}

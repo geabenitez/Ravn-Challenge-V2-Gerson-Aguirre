@@ -1,5 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CustomEntity } from '../../../config/entity';
+import { OrdersEntity } from '../../orders/entities/orders.entity';
 import { ProductsEntity } from '../../products/entities/products.entity';
 import { UsersEntity } from './users.entity';
 
@@ -16,4 +17,7 @@ export class UsersCartEntity extends CustomEntity {
 
   @ManyToOne(() => ProductsEntity, (product) => product.cart)
   product: ProductsEntity;
+
+  @ManyToOne(() => OrdersEntity, (order) => order.cart)
+  order: OrdersEntity;
 }

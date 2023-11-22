@@ -105,4 +105,11 @@ export class ProductsService {
     const urls = await this.AWSS3Service.uploadFiles(id, images);
     return await this.productImagesRepository.add(id, urls);
   }
+
+  async decreaseStock(id: string, quantity: number): Promise<boolean> {
+    this.logger.log(
+      `Requests the decrease of ${quantity} items from product with id: ${id}`,
+    );
+    return await this.repository.decreaseStock(id, quantity);
+  }
 }

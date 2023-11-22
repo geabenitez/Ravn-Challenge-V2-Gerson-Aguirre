@@ -43,7 +43,7 @@ export class AWSS3Service {
   async uploadFiles(
     productId: string,
     files: Express.Multer.File[],
-  ): Promise<any> {
+  ): Promise<string[]> {
     this.logger.log(
       `Requests the upload of ${files.length} files for product with id: ${productId}`,
     );

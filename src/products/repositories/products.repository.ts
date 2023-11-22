@@ -23,13 +23,7 @@ export class ProductsRepository {
     this.logger.log(`Gets a single product with id: ${id}`);
     return await this.repository.findOneOrFail({
       where: { id },
-      join: {
-        alias: 'product',
-        leftJoinAndSelect: {
-          category: 'product.category',
-          images: 'product.images',
-        },
-      },
+      relations: ['category', 'images'],
     });
   }
 
@@ -149,5 +143,15 @@ export class ProductsRepository {
       page,
       limit,
     };
+  }
+
+  async decreaseStock(id: string, quantity: number): Promise<boolean> {
+    this.logger.log(
+      `Decreases the stock of a product with id: ${id} by: ${quantity}`,
+    );
+    const product = await this.repository.findOne({ where: { id } });
+    product.quantity -= quantity;
+    await this.repository.update({ id }, product);
+    return true;
   }
 }

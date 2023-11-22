@@ -7,11 +7,11 @@ import {
 
 export class CustomEntity extends BaseEntity {
   @CreateDateColumn({ type: 'timestamp' })
-  createdAt: Date;
+  createdAt: string;
 
   @UpdateDateColumn({ type: 'timestamp', select: false })
-  updatedAt: Date;
+  updatedAt: string;
 
   @DeleteDateColumn({ type: 'timestamp', select: false })
-  deletedAt: Date;
+  deletedAt: string;
 }
